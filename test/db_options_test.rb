@@ -155,4 +155,22 @@ class DBOptionsTest < Test::Unit::TestCase
     assert_raises(TypeError) { @dbs << LevelDB::DB.new(@path, :compression => "1234") }
     assert_raises(TypeError) { @dbs << LevelDB::DB.new(@path, :compression => 999) }
   end
+
+  def test_filter_policy_default
+    db = LevelDB::DB.new @path
+    @dbs << db
+    assert_equal nil, db.options.bloom_filter_policy
+  end
+
+  def test_filter_policy
+    db = LevelDB::DB.new @path, :bloom_filter_policy => 10
+    @dbs << db
+    assert_equal 10, db.options.bloom_filter_policy
+  end
+
+  def test_filter_policy_invalid_type
+    assert_raises(ArgumentError) { @dbs << LevelDB::DB.new(@path, :bloom_filter_policy => 0) }
+    assert_raises(TypeError) { @dbs << LevelDB::DB.new(@path, :bloom_filter_policy => "1234") }
+    assert_raises(TypeError) { @dbs << LevelDB::DB.new(@path, :bloom_filter_policy => Object.new) }
+  end
 end

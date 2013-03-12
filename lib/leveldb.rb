@@ -91,12 +91,13 @@ class Options
   DEFAULT_BLOCK_SIZE = 4 * 1024
   DEFAULT_BLOCK_RESTART_INTERVAL = 16
   DEFAULT_COMPRESSION = LevelDB::CompressionType::SnappyCompression
+  DEFAULT_BLOOM_FILTER_POLICY = nil
 
   attr_reader :create_if_missing, :error_if_exists,
               :block_cache_size, :paranoid_checks,
               :write_buffer_size, :max_open_files,
               :block_size, :block_restart_interval,
-              :compression
+              :compression, :bloom_filter_policy
 end
 
 end # module LevelDB

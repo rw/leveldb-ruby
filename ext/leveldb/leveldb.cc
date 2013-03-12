@@ -3,6 +3,7 @@
 
 #include "leveldb/db.h"
 #include "leveldb/cache.h"
+#include "leveldb/filter_policy.h"
 #include "leveldb/slice.h"
 #include "leveldb/write_batch.h"
 
@@ -15,6 +16,7 @@ static VALUE c_batch;
 static VALUE c_error;
 static VALUE c_no_compression;
 static VALUE c_snappy_compression;
+static VALUE k_bloom_filter_policy;
 static VALUE k_fill;
 static VALUE k_verify;
 static VALUE k_sync;
@@ -105,6 +107,16 @@ static void set_db_option(VALUE o_options, VALUE opts, leveldb::Options* options
   if(!NIL_P(v)) {
     options->block_cache = leveldb::NewLRUCache(NUM2INT(v));
     rb_iv_set(o_options, "@block_cache_size", v);
+  }
+
+  v = rb_hash_aref(opts, k_bloom_filter_policy);
+  if(!NIL_P(v)) {
+    if(NUM2INT(v) > 0) {
+      options->filter_policy = leveldb::NewBloomFilterPolicy(NUM2INT(v));
+      rb_iv_set(o_options, "@bloom_filter_policy", v);
+    } else {
+      rb_raise(rb_eArgError, "invalid bloom policy of %s bits", rb_id2name(SYM2ID(k_bloom_filter_policy)));
+    }
   }
 
   v = rb_hash_aref(opts, k_compression);
@@ -653,6 +665,7 @@ void Init_leveldb() {
   k_block_cache_size = ID2SYM(rb_intern("block_cache_size"));
   k_block_size = ID2SYM(rb_intern("block_size"));
   k_block_restart_interval = ID2SYM(rb_intern("block_restart_interval"));
+  k_bloom_filter_policy = ID2SYM(rb_intern("bloom_filter_policy"));
   k_compression = ID2SYM(rb_intern("compression"));
   k_max_open_files = ID2SYM(rb_intern("max_open_files"));
   k_to_s = rb_intern("to_s");
