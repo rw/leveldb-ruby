@@ -1,6 +1,7 @@
 require 'test/unit'
 require File.expand_path("../../lib/leveldb", __FILE__)
 require 'fileutils'
+require 'snappy'
 
 class IterationTest < Test::Unit::TestCase
   DB_PATH = "/tmp/iteration.db"
@@ -14,6 +15,10 @@ class IterationTest < Test::Unit::TestCase
     @db.put "b/2", "3"
     @db.put "b/3", "4"
     @db.put "c/1", "5"
+  end
+
+  def teardown
+    @db.close
   end
 
   def test_each

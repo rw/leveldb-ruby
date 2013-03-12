@@ -3,6 +3,7 @@
 require 'test/unit'
 require File.expand_path("../../lib/leveldb", __FILE__)
 require 'fileutils'
+require 'snappy'
 
 class ManyKeyTest < Test::Unit::TestCase
   DB_PATH = "/tmp/manykey.db"
@@ -11,6 +12,10 @@ class ManyKeyTest < Test::Unit::TestCase
     super
     FileUtils.rm_rf DB_PATH
     @db = LevelDB::DB.new DB_PATH
+  end
+
+  def teardown
+    @db.close
   end
 
   def test_get
